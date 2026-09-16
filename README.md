@@ -42,7 +42,7 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the engineering decisions
 Requirements: a current Node.js LTS release, npm, and an EIP-1193 compatible browser wallet such as MetaMask.
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 cp server/config/config.env.example .env
 npm start
 ```
@@ -104,6 +104,16 @@ Base path: `/api/v1/contracts`
 | `POST` | `/escrow/:tokenId/deposit/transaction` | Build buyer earnest-deposit transaction |
 | `POST` | `/escrow/:tokenId/approve/transaction` | Build sale-approval transaction |
 
+### Swagger / OpenAPI documentation
+
+After starting the server, open:
+
+- `http://localhost:3099/api-docs/` — interactive Swagger UI with **Try it out** support.
+- `http://localhost:3099/docs` — convenience redirect to Swagger UI.
+- `http://localhost:3099/api-docs.json` — raw OpenAPI 3.0.3 document for API clients and tooling.
+
+The checked-in specification lives at `server/docs/openapi.js`. It documents the general service health route plus every `/api/v1/contracts` endpoint, including request bodies, path parameters, success payloads, transaction signing metadata, and normalized error responses.
+
 ### Example: health
 
 ```bash
@@ -136,7 +146,7 @@ npm run test:api
 npm run build
 ```
 
-The API unit tests exercise transaction encoding and request validation without requiring a live blockchain node.
+The API test suite covers smart-contract transaction encoding and validation plus the OpenAPI JSON, Swagger UI page, and `/docs` redirect without requiring a live blockchain node.
 
 ## Security and maintainability choices
 
@@ -146,7 +156,8 @@ The API unit tests exercise transaction encoding and request validation without 
 - Server errors are normalized and production responses avoid leaking provider internals.
 - API routes are versioned to support future contract migrations.
 - Request body size and CORS origins are bounded.
-- Local secret files are ignored. The original tracked `server/config/.config.env` should be removed from the public assignment repository.
+- Local secret files are ignored.
+- The API specification is checked into source control so documentation changes can be reviewed alongside implementation changes.
 
 ## Scope
 

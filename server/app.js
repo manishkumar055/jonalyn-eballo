@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
 const contractRouter = require('./routes/contractRoute');
+const openApiSpec = require('./docs/openapi');
 const { blockchainErrorHandler } = require('./blockchain/errorHandler');
 
 const app = express();
@@ -39,6 +41,27 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// OpenAPI document for tooling and interactive Swagger UI for reviewers.
+app.get('/api-docs.json', (req, res) => {
+  res.status(200).json(openApiSpec);
+});
+
+app.get('/docs', (req, res) => {
+  res.redirect(302, '/api-docs/');
+});
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(openApiSpec, {
+    customSiteTitle: 'RentVerse API Documentation',
+    swaggerOptions: {
+      displayRequestDuration: true,
+      persistAuthorization: true,
+    },
+  })
+);
 
 // Versioned blockchain API. It is intentionally isolated from the unrelated
 // legacy server files that shipped in the source repository.
