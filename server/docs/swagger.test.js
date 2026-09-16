@@ -45,8 +45,9 @@ test('Swagger UI is served for interactive API review', async () => {
   assert.match(response.headers.get('content-type') || '', /text\/html/);
 
   const html = await response.text();
-  assert.match(html, /Swagger UI/i);
-  assert.match(html, /swagger-ui/i);
+  assert.match(html, /<title>RentVerse API Documentation<\/title>/i);
+  assert.match(html, /id="swagger-ui"/i);
+  assert.match(html, /swagger-ui-bundle\.js/i);
 });
 
 test('/docs redirects to Swagger UI', async () => {
